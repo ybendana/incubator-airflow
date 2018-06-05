@@ -883,7 +883,7 @@ class TaskInstance(Base, LoggingMixin):
         the orchestrator.
         """
         dag = self.task.dag
-        tp = json.dumps(self.task.params) if self.task.params else None
+        task_params = json.dumps(self.task.params) if self.task.params else None
 
         should_pass_filepath = not pickle_id and dag
         if should_pass_filepath and dag.full_filepath != dag.filepath:
@@ -909,7 +909,7 @@ class TaskInstance(Base, LoggingMixin):
             job_id=job_id,
             pool=pool,
             cfg_path=cfg_path,
-            task_params=tp)
+            task_params=task_params)
 
     @staticmethod
     def generate_command(dag_id,
