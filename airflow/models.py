@@ -883,6 +883,7 @@ class TaskInstance(Base, LoggingMixin):
         the orchestrator.
         """
         dag = self.task.dag
+        tp = json.dumps(self.task.params) if self.task.params else None
 
         should_pass_filepath = not pickle_id and dag
         if should_pass_filepath and dag.full_filepath != dag.filepath:
@@ -907,7 +908,8 @@ class TaskInstance(Base, LoggingMixin):
             raw=raw,
             job_id=job_id,
             pool=pool,
-            cfg_path=cfg_path)
+            cfg_path=cfg_path,
+            task_params=tp)
 
     @staticmethod
     def generate_command(dag_id,
@@ -924,7 +926,8 @@ class TaskInstance(Base, LoggingMixin):
                          raw=False,
                          job_id=None,
                          pool=None,
-                         cfg_path=None
+                         cfg_path=None,
+                         task_params=None
                          ):
         """
         Generates the shell command required to execute this task instance.
@@ -974,6 +977,7 @@ class TaskInstance(Base, LoggingMixin):
         cmd.extend(["--raw"]) if raw else None
         cmd.extend(["-sd", file_path]) if file_path else None
         cmd.extend(["--cfg_path", cfg_path]) if cfg_path else None
+        cmd.extend(["--task_params '{}'".format(task_params)]) if task_params else None
         return cmd
 
     @property
